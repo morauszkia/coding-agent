@@ -1,13 +1,12 @@
 import os
+from functions.utils import get_absolute_path, is_outside_directory
 
 
 def get_files_info(working_directory, directory=None):
     try:
-        working_directory_absolute_path = os.path.abspath(working_directory)
-        directory_joined_path = os.path.join(working_directory_absolute_path, directory)
-        directory_absolute_path = os.path.abspath(directory_joined_path)
+        directory_absolute_path = get_absolute_path(working_directory, directory)
 
-        if not directory_absolute_path.startswith(working_directory_absolute_path):
+        if is_outside_directory(working_directory, directory_absolute_path):
             print(f'Error: Cannot list "{directory}" as it is outside the permitted working directory')
             return ""
 

@@ -1,13 +1,12 @@
 import os
+from functions.utils import get_absolute_path, is_outside_directory
 
 
 def write_file(working_directory, file_path, content):
     try:
-        working_directory_absolute_path = os.path.abspath(working_directory)
-        file_joined_path = os.path.join(working_directory_absolute_path, file_path)
-        file_absolute_path = os.path.abspath(file_joined_path)
+        file_absolute_path = get_absolute_path(working_directory, file_path)
 
-        if not file_absolute_path.startswith(working_directory_absolute_path):
+        if is_outside_directory(working_directory, file_absolute_path):
             print(f'Error: Cannot write to "{file_path}" as it is outside the permitted working directory')
             return ""
 
