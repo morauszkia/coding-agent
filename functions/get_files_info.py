@@ -2,7 +2,7 @@ import os
 from functions.utils import get_absolute_path, is_outside_directory
 
 
-def get_files_info(working_directory, directory=None):
+def get_files_info(working_directory, directory="."):
     try:
         directory_absolute_path = get_absolute_path(working_directory, directory)
 
