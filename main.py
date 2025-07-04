@@ -10,6 +10,8 @@ from functions.run_python_file import run_python_file
 from functions.write_file import write_file
 
 
+WORKING_DIRECTORY = "./calculator"
+
 MODEL_NAME = "gemini-2.0-flash-001"
 SYSTEM_PROMPT = """
 You are a helpful AI coding agent.
@@ -124,7 +126,7 @@ def call_function(function_call_part, verbose=False):
             ],
         )
     
-    function_result = func("./calculator", **arguments)
+    function_result = func(WORKING_DIRECTORY, **arguments)
 
     return types.Content(
         role="tool",
