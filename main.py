@@ -146,31 +146,38 @@ def generate_content(user_prompt, verbose=False):
             types.Content(role="user", parts=[types.Part(text=user_prompt)])
         ] 
 
-    response = client.models.generate_content(
-        model=MODEL_NAME, 
-        contents=messages,
-        config=types.GenerateContentConfig(
-            tools=[available_functions],
-            system_instruction=SYSTEM_PROMPT
+    for i in range(20):
+        response = client.models.generate_content(
+            model=MODEL_NAME, 
+            contents=messages,
+            config=types.GenerateContentConfig(
+                tools=[available_functions],
+                system_instruction=SYSTEM_PROMPT
+            )
         )
-    )
 
-    if verbose:
-        print(f"User prompt: {user_prompt}")
-        print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
-        print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
+        for candidate in response.candidates:
+            messages.append(candidate.content)
 
-    if len(response.function_calls) > 0:
-        for function_call in response.function_calls:
-            function_result = call_function(function_call, verbose)
+        if verbose:
+            print(f"User prompt: {user_prompt}")
+            print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
+            print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
 
-            if not function_result.parts[0].function_response.response:
-                raise Exception("Error: Function didn't return result!")
-            
-            if verbose:
-                print(f"-> {function_result.parts[0].function_response.response}")
-    else:
-        print(response.text)
+        if response.function_calls and len(response.function_calls) > 0:
+            for function_call in response.function_calls:
+                function_result = call_function(function_call, verbose)
+
+                if not function_result.parts[0].function_response.response:
+                    raise Exception("Error: Function didn't return result!")
+                
+                if verbose:
+                    print(f"-> {function_result.parts[0].function_response.response}")
+
+                messages.append(function_result)
+        else:
+            print(response.text)
+            break
 
 
 def main():
