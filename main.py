@@ -12,7 +12,7 @@ from functions.write_file import write_file
 
 WORKING_DIRECTORY = "./calculator"
 
-MODEL_NAME = "gemini-2.0-flash-001"
+MODEL_NAME = "gemini-2.5-flash"
 SYSTEM_PROMPT = """
 You are a helpful AI coding agent.
 
@@ -142,6 +142,10 @@ def call_function(function_call_part, verbose=False):
 def generate_content(user_prompt, verbose=False):
     load_dotenv()
     api_key = os.environ.get("GEMINI_API_KEY")
+
+    if not api_key:
+        raise RuntimeError("You need to provide a valid GEMINI_API_KEY in your .env file")
+
     client = genai.Client(api_key=api_key)
 
     messages = [
@@ -162,6 +166,9 @@ def generate_content(user_prompt, verbose=False):
             messages.append(candidate.content)
 
         if verbose:
+            if not response.usage_metadata:
+                raise RuntimeError("Gemini API response appears to be malformed.")
+            
             print(f"User prompt: {user_prompt}")
             print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
             print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
